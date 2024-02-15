@@ -1,7 +1,7 @@
+import { update } from "@/utils/actions";
 import { analyze } from "@/utils/ai";
 import { getUserByClerkId } from "@/utils/auth";
 import { prisma } from "@/utils/db";
-import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export const PATCH = async (
@@ -29,11 +29,14 @@ export const PATCH = async (
       entryId: updatedEntry.id,
     },
     create: {
+      userId: user.id,
       entryId: updatedEntry.id,
       ...analysis!,
     },
     update: { ...analysis },
   });
+  update(["/journal"]);
+
   return NextResponse.json({
     data: { ...updatedEntry, analysis: newAnalysis },
   });
